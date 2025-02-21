@@ -63,8 +63,7 @@ def fetch_restaurants(lat, lon, radius=2000, keyword="restaurant|pub|caffè"):
 def generate_itinerary_old(lat, lon, places):
     """Genera un itinerario ottimizzato usando Google Directions API"""
     if not places:
-        return {"error": "Nessun luogo trovato per creare un itinerario."}
-    
+        return {"error": "No place found to generate an itinerary"}
     waypoints = "|".join([
         f"{place['geometry']['location']['lat']},{place['geometry']['location']['lng']}" 
         for place in places[:5]  # Prendiamo i primi 5 luoghi più vicini
@@ -90,14 +89,14 @@ def generate_itinerary_old(lat, lon, places):
 def generate_itinerary(lat, lon, places):
     """Genera un itinerario ottimizzato con punti ristoro e output formattato."""
     if not places:
-        return "❌ Nessun luogo trovato per creare un itinerario."
+        return "❌ No place found to generate an itinerary."
 
     waypoints = []
-    itinerary = f"📍 **Itinerario da ({lat}, {lon})**\n\n"
+    itinerary = f"📍 **Itinerary from ({lat}, {lon})**\n\n"
 
     for i, place in enumerate(places[:5], start=1):
         place_name = place["name"]
-        place_address = place.get("vicinity", "Indirizzo non disponibile")
+        place_address = place.get("vicinity", "Address not available")
         place_type = ", ".join(place["types"]) if "types" in place else "N/A"
         place_lat = place['geometry']['location']['lat']
         place_lon = place['geometry']['location']['lng']
@@ -110,11 +109,11 @@ def generate_itinerary(lat, lon, places):
         if restaurants:
             best_restaurant = restaurants[0]
             rest_name = best_restaurant["name"]
-            rest_address = best_restaurant.get("vicinity", "Indirizzo non disponibile")
+            rest_address = best_restaurant.get("vicinity", "Address not available")
             rest_lat = best_restaurant['geometry']['location']['lat']
             rest_lon = best_restaurant['geometry']['location']['lng']
             
-            itinerary += f"   🍽️ **Ristoro consigliato:** {rest_name}\n   📍 {rest_address}\n"
+            itinerary += f"   🍽️ **Restaurant advisable:** {rest_name}\n   📍 {rest_address}\n"
             waypoints.append(f"{rest_lat},{rest_lon}")
 
         itinerary += "\n"
@@ -138,7 +137,7 @@ def generate_itinerary(lat, lon, places):
         total_duration = directions["routes"][0]["legs"][0]["duration"]["text"]
         itinerary += f"🛤️ **Distanza totale:** {total_distance}\n⏳ **Durata stimata:** {total_duration}\n"
     else:
-        itinerary += "⚠️ Errore nel calcolo del percorso.\n"
+        itinerary += "⚠️ Error during route calculation.\n"
 
     return itinerary
 
@@ -161,5 +160,5 @@ def get_coordinates(place_name):
         else:
             return None, None
     else:
-        print(f"Errore Geocoding API: {response.status_code}")
+        print(f"Geocoding API Error: {response.status_code}")
         return None, None
